@@ -2,8 +2,25 @@ version: '2.0'
 services:
   python-project:
     image: abc
-    command: bash -c "django-admin startproject testing"
+    command: bash -c "django-admin startproject testing && find . -exec chmod 777 {} \;"
     volumes: [".:/usr/src/app"]
+    networks: 
+      admin:
+        ipv4_address: 10.10.10.5
+
+  python-shell:
+    image: abc
+    command: bash
+    stdin_open: true    # standard input enable
+    tty: true           # terminal true
+    depends_on: 
+      - python-sql
+    volumes: [".:/usr/src/app"]
+    networks: 
+      admin:
+        ipv4_address: 10.10.10.2
+    
+
   python-sql:
     image: mysql
     volumes: ["./data:/var/lib/mysql"]
@@ -12,10 +29,25 @@ services:
       MYSQL_DATABASE: incridea
       MYSQL_USER: shashank
       MYSQL_PASSWORD: shashank
+    networks: 
+      admin:
+        ipv4_address: 10.10.10.3
+
   python-server:
     image: abc
     command: bash -c "cd testing && python manage.py runserver 8888"
     volumes: ['.:/usr/src/app']
     ports: ["3000:8888"]
-    depends_on:
+    networks: 
+      admin:
+        ipv4_address: 10.10.10.4
+    depends_on:     # Dependance service
       - python-sql
+
+networks: 
+  admin:
+    driver: bridge  # network which are connected to the system will be directly connected to docker
+    ipam:
+      config:
+        - subnet: 10.10.10.0/20
+          gateway: 10.10.10.1
