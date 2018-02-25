@@ -13,7 +13,7 @@ docker images
 ```
 
 # Creating Docker Compose
-Create docker-composite.yml file where we will be writing all our docker service and how they interacts with each other. To run each of the service which we have defined in docker-compose.yml file is given below
+Create <strong>docker-composite.yml</strong> file where we will be writing all our docker service and how they interacts with each other. To run each of the service which we have defined in docker-compose.yml file is given below
 
 ```
 docker-compose up <service-name>
@@ -27,3 +27,17 @@ docker-compose run <service-name> bash
 ```
 
 Then we can execute the commands which we would like to execute using interact shell in our case.
+
+# To execute
+Inside docker development shell(python-shell service) execute following codes.
+
+1. To create migration to the tables(check <em>database/models.py</em> and changes in <em>testing/settings.py</em> database part) 
+``` 
+python manage.py makemigrations
+
+python manage.py migrate
+```
+2. To run the server in our case django server In our case. Come out of the Docker container and execute it, this can be done by
+```
+docker-compose up python-server
+```

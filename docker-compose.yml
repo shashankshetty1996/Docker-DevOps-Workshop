@@ -1,5 +1,6 @@
 version: '2.0'
 services:
+  # To create container
   python-project:
     image: abc
     command: bash -c "django-admin startproject testing && find . -exec chmod 777 {} \;"
@@ -8,6 +9,7 @@ services:
       admin:
         ipv4_address: 10.10.10.5
 
+  # Dev ENV
   python-shell:
     image: abc
     command: bash
@@ -20,7 +22,7 @@ services:
       admin:
         ipv4_address: 10.10.10.2
     
-
+  # MySQL Server Database
   python-sql:
     image: mysql
     volumes: ["./data:/var/lib/mysql"]
@@ -33,17 +35,20 @@ services:
       admin:
         ipv4_address: 10.10.10.3
 
+  # Prod Server
   python-server:
     image: abc
-    command: bash -c "cd testing && python manage.py runserver 8888"
+    build: .
+    command: bash -c "cd testing && python manage.py makemigrations && gunicorn testing.wsgi:application --bind 0:8888"
     volumes: ['.:/usr/src/app']
-    ports: ["3000:8888"]
+    ports: ["8000:8888"]
     networks: 
       admin:
         ipv4_address: 10.10.10.4
     depends_on:     # Dependance service
       - python-sql
 
+# Network do that docker service container can interact with each other
 networks: 
   admin:
     driver: bridge  # network which are connected to the system will be directly connected to docker
